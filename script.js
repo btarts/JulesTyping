@@ -25,35 +25,84 @@ const wordLists = {
         "The United States of America has 50 states.",
         "Harry Potter and the Sorcerer's Stone.",
         "Microsoft, Apple, Google, and Amazon are tech giants.",
-        "The Quick Brown Fox Jumps Over The Lazy Dog."
+        "The Quick Brown Fox Jumps Over The Lazy Dog.",
+        "The United Nations (UN) was established in 1945.",
+        "NASA stands for National Aeronautics and Space Administration.",
+        "My favorite book is 'The Lord of the Rings' by J.R.R. Tolkien.",
+        "Did you know that DNA stands for Deoxyribonucleic Acid?",
+        "I live at 123 Main St., Springfield, IL 62704.",
+        "The CPU, RAM, and GPU are important computer components.",
+        "JavaScript, Python, and C++ are programming languages.",
+        "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.",
+        "January, February, March, April, May, June, July.",
+        "Dr. Smith and Mrs. Jones went to Washington D.C."
     ],
     numbers: [
         "1 2 3 4 5 6 7 8 9 0",
         "My phone number is 555-0199.",
         "The year is 2023 and the time is 12:00 PM.",
         "10 + 20 = 30 and 100 - 50 = 50.",
-        "There are 365 days in a year and 24 hours in a day."
+        "There are 365 days in a year and 24 hours in a day.",
+        "The speed of light is approximately 299,792,458 meters per second.",
+        "Pi is approximately 3.14159265359.",
+        "Call me at 555-0123 or 555-0145.",
+        "1st, 2nd, 3rd, 4th, 5th, 6th, 7th, 8th, 9th, 10th.",
+        "The meeting is on 12/25/2023 at 10:30 AM.",
+        "50% of 200 is 100.",
+        "1000, 2000, 3000, 4000, 5000.",
+        "Order #998877 is ready for pickup.",
+        "The temperature dropped to -5 degrees Celsius.",
+        "Height: 5'11\", Weight: 180 lbs."
     ],
     symbols: [
         "Hello, world! How are you today?",
         "user@example.com is a sample email address.",
         "Prices start at $9.99 for the first month.",
         "Use #hashtag to tag your posts!",
-        "HTML uses tags like <div> and <span>."
+        "HTML uses tags like <div> and <span>.",
+        "Print('Hello, World!');",
+        "Is it true? Yes/No.",
+        "http://www.example.com",
+        "Price: $50.00 & Shipping: $5.99",
+        "100% Correct!",
+        "Why? Because!",
+        "(Parentheses) and [Brackets] and {Braces}.",
+        "x > y && y < z",
+        "Start *bold* and _italic_."
     ],
     speed: [
         "the of and a to in is you that it",
         "he was for on are as with his they I",
         "at be this have from or one had by word",
         "but not what all were we when your can said",
-        "there use an each which she do how their if"
+        "there use an each which she do how their if",
+        "The quick brown fox jumps over the lazy dog",
+        "Pack my box with five dozen liquor jugs",
+        "How vexingly quick daft zebras jump",
+        "Sphinx of black quartz judge my vow",
+        "The five boxing wizards jump quickly",
+        "as soon as possible",
+        "thank you very much",
+        "have a nice day",
+        "good luck to you",
+        "see you later alligator"
     ],
     accuracy: [
         "Accommodate the embarrassment of the rhythm.",
         "The pronunciation of the word queue is interesting.",
         "Mischievous behavior can lead to unnecessary trouble.",
         "Conscience is the inner voice that warns us.",
-        "Maintenance of the vehicle is necessary for safety."
+        "Maintenance of the vehicle is necessary for safety.",
+        "Thorough thought through throughout.",
+        "Receive, deceive, ceiling, receipt.",
+        "Necessary, separate, definitely, embarrass.",
+        "Which witch is which?",
+        "Their there they're.",
+        "Two too to.",
+        "Affect effect.",
+        "Loose lose.",
+        "Weather whether.",
+        "Principal principle."
     ]
 };
 
@@ -73,21 +122,18 @@ const timeEl = document.getElementById('time');
 const wpmEl = document.getElementById('wpm');
 const accuracyEl = document.getElementById('accuracy');
 const gameArea = document.getElementById('game-area');
-const difficultySelector = document.querySelector('.difficulty-selector');
 const restartBtn = document.getElementById('restart-btn');
 const resultsModal = document.getElementById('results-modal');
 const finalWpmEl = document.getElementById('final-wpm');
 const finalAccuracyEl = document.getElementById('final-accuracy');
+const mainMenu = document.getElementById('main-menu');
 
 function startGame(level) {
     currentLevel = level;
-    // Hide all difficulty selectors and headers
-    document.querySelectorAll('.difficulty-selector').forEach(el => el.classList.add('hidden'));
-    const skillHeading = document.querySelector('h3');
-    if (skillHeading) skillHeading.classList.add('hidden');
 
+    // Hide main menu
+    mainMenu.classList.add('hidden');
     gameArea.classList.remove('hidden');
-    document.querySelector('header').classList.add('hidden'); // Hide header to save space
     
     resetGame();
     nextText();
@@ -98,6 +144,20 @@ function startGame(level) {
     
     // Start timer on first input
     typingInput.addEventListener('keydown', startTimerOnce);
+}
+
+function goHome() {
+    // Stop game
+    clearInterval(timerInterval);
+    gameActive = false;
+
+    // Reset state
+    resetGame();
+
+    // Hide game, show menu
+    gameArea.classList.add('hidden');
+    resultsModal.classList.add('hidden');
+    mainMenu.classList.remove('hidden');
 }
 
 function startTimerOnce() {
@@ -118,10 +178,13 @@ function nextText() {
 
 function renderText() {
     textDisplay.innerHTML = '';
-    currentText.split('').forEach(char => {
+    currentText.split('').forEach((char, index) => {
         const charSpan = document.createElement('span');
         charSpan.innerText = char;
         textDisplay.appendChild(charSpan);
+        if (index === 0) {
+            charSpan.classList.add('current');
+        }
     });
 }
 
@@ -135,6 +198,9 @@ function handleInput() {
     arrayQuote.forEach((characterSpan, index) => {
         const character = arrayValue[index];
         
+        // Remove current class from all
+        characterSpan.classList.remove('current');
+
         if (character == null) {
             characterSpan.classList.remove('correct');
             characterSpan.classList.remove('incorrect');
@@ -149,6 +215,11 @@ function handleInput() {
             correct = false;
         }
     });
+
+    // Add current class to the next character to be typed
+    if (arrayValue.length < arrayQuote.length) {
+        arrayQuote[arrayValue.length].classList.add('current');
+    }
     
     // Update stats
     const totalChars = arrayValue.length;
@@ -220,6 +291,7 @@ function endGame() {
 function resetGame() {
     clearInterval(timerInterval);
     gameActive = false;
+    typingInput.removeEventListener('keydown', startTimerOnce);
     timeLeft = gameDuration;
     timeEl.innerText = timeLeft;
     wpmEl.innerText = 0;
@@ -227,9 +299,18 @@ function resetGame() {
     totalTyped = 0;
     correctTyped = 0;
     typingInput.value = '';
+
+    // Also reset text display visual state if needed, but nextText() handles it.
+    // Wait, nextText is called in startGame, but in goHome we might want to clear it?
+    // goHome calls resetGame.
+    // If we go home, we don't necessarily need to clear the text display, but it's cleaner.
+    textDisplay.innerHTML = '';
 }
 
 function restartGame() {
     // Reload page or reset state
-    location.reload(); 
+    // location.reload();
+    // Better:
+    resetGame();
+    startGame(currentLevel);
 }

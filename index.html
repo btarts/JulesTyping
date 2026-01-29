@@ -9,27 +9,64 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Typing Fun for Kids! ⌨️</h1>
-            <p>Select your level to start typing!</p>
-        </header>
+        <div id="main-menu">
+            <header>
+                <h1>Typing Fun for Kids! ⌨️</h1>
+                <p>Select your game to start typing!</p>
+            </header>
 
-        <div class="difficulty-selector">
-            <button id="level-easy" class="btn level-btn" onclick="startGame('easy')">Easy (K-2)</button>
-            <button id="level-medium" class="btn level-btn" onclick="startGame('medium')">Medium (3-4)</button>
-            <button id="level-hard" class="btn level-btn" onclick="startGame('hard')">Hard (5-6)</button>
-        </div>
+            <div class="game-grid">
+                <!-- Difficulty Levels -->
+                <div class="game-card level-easy" onclick="startGame('easy')">
+                    <div class="icon">🐢</div>
+                    <h3>Easy</h3>
+                    <p>Grades K-2</p>
+                </div>
+                <div class="game-card level-medium" onclick="startGame('medium')">
+                    <div class="icon">🐇</div>
+                    <h3>Medium</h3>
+                    <p>Grades 3-4</p>
+                </div>
+                <div class="game-card level-hard" onclick="startGame('hard')">
+                    <div class="icon">🐆</div>
+                    <h3>Hard</h3>
+                    <p>Grades 5-6</p>
+                </div>
 
-        <h3>Skill Practice</h3>
-        <div class="difficulty-selector">
-            <button id="skill-shift" class="btn level-btn" onclick="startGame('shift')">Shift & Capitals</button>
-            <button id="skill-numbers" class="btn level-btn" onclick="startGame('numbers')">Numbers</button>
-            <button id="skill-symbols" class="btn level-btn" onclick="startGame('symbols')">Symbols</button>
-            <button id="skill-speed" class="btn level-btn" onclick="startGame('speed')">Speed Run</button>
-            <button id="skill-accuracy" class="btn level-btn" onclick="startGame('accuracy')">Accuracy Master</button>
+                <!-- Skill Practice -->
+                <div class="game-card skill-shift" onclick="startGame('shift')">
+                    <div class="icon">⬆️</div>
+                    <h3>Shift</h3>
+                    <p>Practice Capitals</p>
+                </div>
+                <div class="game-card skill-numbers" onclick="startGame('numbers')">
+                    <div class="icon">🔢</div>
+                    <h3>Numbers</h3>
+                    <p>Number Row</p>
+                </div>
+                <div class="game-card skill-symbols" onclick="startGame('symbols')">
+                    <div class="icon">@#</div>
+                    <h3>Symbols</h3>
+                    <p>Special Chars</p>
+                </div>
+                <div class="game-card skill-speed" onclick="startGame('speed')">
+                    <div class="icon">⚡</div>
+                    <h3>Speed</h3>
+                    <p>Type Fast!</p>
+                </div>
+                <div class="game-card skill-accuracy" onclick="startGame('accuracy')">
+                    <div class="icon">🎯</div>
+                    <h3>Accuracy</h3>
+                    <p>Be Precise</p>
+                </div>
+            </div>
         </div>
 
         <div id="game-area" class="hidden">
+            <div class="game-header">
+                <button id="home-btn" class="btn" onclick="goHome()">🏠 Home</button>
+            </div>
+
             <div class="stats-bar">
                 <div class="stat">⏱️ Time: <span id="time">60</span>s</div>
                 <div class="stat">⚡ WPM: <span id="wpm">0</span></div>
