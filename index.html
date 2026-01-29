@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Fun for Kids!</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Typing Fun for Kids! ⌨️</h1>
+            <p>Select your level to start typing!</p>
+        </header>
+
+        <div class="difficulty-selector">
+            <button id="level-easy" class="btn level-btn" onclick="startGame('easy')">Easy (K-2)</button>
+            <button id="level-medium" class="btn level-btn" onclick="startGame('medium')">Medium (3-4)</button>
+            <button id="level-hard" class="btn level-btn" onclick="startGame('hard')">Hard (5-6)</button>
+        </div>
+
+        <div id="game-area" class="hidden">
+            <div class="stats-bar">
+                <div class="stat">⏱️ Time: <span id="time">60</span>s</div>
+                <div class="stat">⚡ WPM: <span id="wpm">0</span></div>
+                <div class="stat">🎯 Accuracy: <span id="accuracy">100</span>%</div>
+            </div>
+
+            <div class="text-display" id="text-display">
+                <!-- Text will appear here -->
+            </div>
+
+            <textarea id="typing-input" placeholder="Start typing here..." autofocus></textarea>
+            
+            <button id="restart-btn" class="btn hidden" onclick="restartGame()">Play Again</button>
+        </div>
+        
+        <div id="results-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Great Job! 🎉</h2>
+                <p>You typed <span id="final-wpm">0</span> WPM</p>
+                <p>Accuracy: <span id="final-accuracy">0</span>%</p>
+                <button class="btn" onclick="location.reload()">Back to Menu</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>Keep practicing every day!</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
