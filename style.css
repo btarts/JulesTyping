@@ -70,6 +70,19 @@ header p {
 #level-medium { background-color: #FFB74D; color: white; }
 #level-hard { background-color: #E57373; color: white; }
 
+#skill-shift { background-color: #7986CB; color: white; }
+#skill-numbers { background-color: #4DB6AC; color: white; }
+#skill-symbols { background-color: #BA68C8; color: white; }
+#skill-speed { background-color: #FDD835; color: #333; }
+#skill-accuracy { background-color: #A1887F; color: white; }
+
+h3 {
+    color: #555;
+    font-size: 2rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
 .stats-bar {
     display: flex;
     justify-content: space-around;
