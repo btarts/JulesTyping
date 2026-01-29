@@ -86,15 +86,21 @@
 
             <!-- Adventure Mode Display -->
             <div id="adventure-area" class="hidden">
-                <div class="map-container">
-                    <div class="map-path"></div>
-                    <div id="player-avatar" class="avatar player">🧙</div>
-                    <div id="monster-avatar" class="avatar monster">🐉</div>
+                <div id="adventure-map" class="hidden">
+                    <h2>Select a Level</h2>
+                    <div class="level-grid"></div>
                 </div>
-                <div id="monster-health-bar">
-                    <div id="monster-health-fill"></div>
+                <div id="adventure-battle" class="hidden">
+                    <div class="map-container">
+                        <div class="map-path"></div>
+                        <div id="player-avatar" class="avatar player">🧙</div>
+                        <div id="monster-avatar" class="avatar monster">🐉</div>
+                    </div>
+                    <div id="monster-health-bar">
+                        <div id="monster-health-fill"></div>
+                    </div>
+                    <div id="loot-display" class="hidden">💎 +1 Gem!</div>
                 </div>
-                <div id="loot-display" class="hidden">💎 +1 Gem!</div>
             </div>
 
             <!-- Space Mode Display -->
@@ -121,6 +127,11 @@
                     <div class="track-lane">
                         <div class="car-label">CPU 2</div>
                         <div id="cpu-car-2" class="car">🚕</div>
+                        <div class="finish-line">🏁</div>
+                    </div>
+                    <div class="track-lane">
+                        <div class="car-label">CPU 3</div>
+                        <div id="cpu-car-3" class="car">🚓</div>
                         <div class="finish-line">🏁</div>
                     </div>
                 </div>

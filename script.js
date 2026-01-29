@@ -32,23 +32,7 @@ const wordLists = {
         "s l s l s l",
         "a ; a ; a ;"
     ],
-    shift: [
-        "New York City is known as the Big Apple.",
-        "The United States of America has 50 states.",
-        "Harry Potter and the Sorcerer's Stone.",
-        "Microsoft, Apple, Google, and Amazon are tech giants.",
-        "The Quick Brown Fox Jumps Over The Lazy Dog.",
-        "The United Nations (UN) was established in 1945.",
-        "NASA stands for National Aeronautics and Space Administration.",
-        "My favorite book is 'The Lord of the Rings' by J.R.R. Tolkien.",
-        "Did you know that DNA stands for Deoxyribonucleic Acid?",
-        "I live at 123 Main St., Springfield, IL 62704.",
-        "The CPU, RAM, and GPU are important computer components.",
-        "JavaScript, Python, and C++ are programming languages.",
-        "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.",
-        "January, February, March, April, May, June, July.",
-        "Dr. Smith and Mrs. Jones went to Washington D.C."
-    ],
+    shift: [], // Replaced by adventureLevels logic
     numbers: [
         "1 2 3 4 5 6 7 8 9 0",
         "My phone number is 555-0199.",
@@ -67,37 +51,12 @@ const wordLists = {
         "Height: 5'11\", Weight: 180 lbs."
     ],
     symbols: [
-        "Hello, world! How are you today?",
-        "user@example.com is a sample email address.",
-        "Prices start at $9.99 for the first month.",
-        "Use #hashtag to tag your posts!",
-        "HTML uses tags like <div> and <span>.",
-        "Print('Hello, World!');",
-        "Is it true? Yes/No.",
-        "http://www.example.com",
-        "Price: $50.00 & Shipping: $5.99",
-        "100% Correct!",
-        "Why? Because!",
-        "(Parentheses) and [Brackets] and {Braces}.",
-        "x > y && y < z",
-        "Start *bold* and _italic_."
+        "!@#", "$%^", "&*()", "_+-=", "{}[]", "|\\:;", "\"'<", ">?,.", "~`",
+        "<>?", ":\"|", "{}_+", "!@#$", "%^&*", "()_+"
     ],
     speed: [
-        "abc def ghi jkl mno pqr stu vwx yz",
-        "z y x w v u t s r q p o n m l k j i h g f e d c b a",
-        "qwerty uiop asdfgh jkl zxcvbnm",
-        "mnbvcxz lkjhgfds apoiuytrewq",
-        "aazz ssxx ddcc ffvv ggbb hhnn jjmm",
-        "aq sw de fr gt hy ju ki lo p;",
-        "za xs cd vf bg nh mj ,. /?",
-        "pl ok ij uh yg tf rd es wa",
-        "qaz wsx edc rfv tgb yhn ujm ikl olp",
-        "poi lkj mnb uy tr ew q",
-        "aa bb cc dd ee ff gg hh ii jj kk ll mm nn oo pp",
-        "abab cdcd efef ghgh ijij klkl mnmn opop",
-        "abcde fghij klmno pqrst uvwxy z",
-        "a b c d e f g h i j k l m n o p q r s t u v w x y z",
-        "zyxwvutsrqponmlkjihgfedcba"
+        "qwer", "asdf", "zxcv", "tyui", "ghjk", "bnm", "opkl", "rewq", "fdsa", "vcxz",
+        "mjuy", "nhbg", "vfcd", "xswz", "zaq", "xsw", "cde", "vfr", "bgt", "nhy"
     ],
     accuracy: [
         "Accommodate the embarrassment of the rhythm.",
@@ -117,6 +76,14 @@ const wordLists = {
         "Principal principle."
     ]
 };
+
+const adventureLevels = [
+    { name: "Goblin Scout", icon: "👺", text: "New York City is known as the Big Apple." },
+    { name: "Orc Warrior", icon: "👹", text: "The United States of America has 50 states." },
+    { name: "Dark Wizard", icon: "🧙‍♂️", text: "Microsoft, Apple, Google, and Amazon are tech giants." },
+    { name: "Stone Golem", icon: "🗿", text: "NASA stands for National Aeronautics and Space Administration." },
+    { name: "Dragon", icon: "🐉", text: "The Quick Brown Fox Jumps Over The Lazy Dog." }
+];
 
 let currentLevel = 'easy';
 let currentText = "";
@@ -276,16 +243,26 @@ function handleInput() {
         
         const accuracy = Math.round((currentCorrect / totalChars) * 100);
         accuracyEl.innerText = accuracy;
+
+        if (currentLevel === 'shift') {
+            updateAdventureVisuals(currentCorrect, currentText.length);
+        } else if (currentLevel === 'speed') {
+            updateRaceVisuals(currentCorrect, currentText.length);
+        }
     }
 
     // Check if finished current text
     if (arrayValue.length === currentText.length && correct) {
-        // Add score from this round (simplified logic for now, just infinite play until timer runs out)
-        // Or we could reload new text.
-        // Let's add to total and clear.
-        totalTyped += currentText.length;
-        correctTyped += currentText.length;
-        nextText();
+        if (currentLevel === 'shift') {
+            triggerLootAndMove();
+        } else {
+            // Add score from this round (simplified logic for now, just infinite play until timer runs out)
+            // Or we could reload new text.
+            // Let's add to total and clear.
+            totalTyped += currentText.length;
+            correctTyped += currentText.length;
+            nextText();
+        }
     }
 }
 
@@ -372,14 +349,45 @@ function restartGame() {
 // Placeholders for new modes
 function startAdventureGame() {
     adventureArea.classList.remove('hidden');
+    // Hide battle area, show map
+    document.getElementById('adventure-battle').classList.add('hidden');
+    document.getElementById('adventure-map').classList.remove('hidden');
+    textDisplay.classList.add('hidden'); // Hide text display until level starts
+
+    renderAdventureMap();
+}
+
+function renderAdventureMap() {
+    const grid = document.querySelector('.level-grid');
+    grid.innerHTML = '';
+    adventureLevels.forEach((level, index) => {
+        const node = document.createElement('div');
+        node.className = 'level-node';
+        node.innerHTML = `
+            <div class="icon">${level.icon}</div>
+            <h4>${level.name}</h4>
+        `;
+        node.onclick = () => startAdventureLevel(index);
+        grid.appendChild(node);
+    });
+}
+
+function startAdventureLevel(index) {
+    document.getElementById('adventure-map').classList.add('hidden');
+    document.getElementById('adventure-battle').classList.remove('hidden');
     textDisplay.classList.remove('hidden');
 
-    // Reset Avatar positions
+    const level = adventureLevels[index];
+    currentText = level.text;
+    document.getElementById('monster-avatar').innerText = level.icon;
+
+    // Reset visuals
     document.getElementById('player-avatar').style.left = '10%';
     document.getElementById('monster-avatar').style.opacity = '1';
     document.getElementById('monster-health-fill').style.width = '100%';
+    document.getElementById('monster-avatar').style.transform = 'none';
 
-    nextText();
+    renderText();
 
     typingInput.disabled = false;
     typingInput.focus();
@@ -407,28 +415,20 @@ function triggerLootAndMove() {
     playerEl.style.left = '80%'; // Move to monster position
 
     setTimeout(() => {
-        // Reset Visuals for next round
+        // Return to Map
         lootEl.classList.add('hidden');
-        monsterEl.style.transform = 'none';
-        monsterEl.style.opacity = '1';
-        playerEl.style.left = '10%';
-        document.getElementById('monster-health-fill').style.width = '100%';
 
         // Add score
         totalTyped += currentText.length;
         correctTyped += currentText.length;
 
-        nextText();
         typingInput.value = '';
-        // Reset highlights
-        const arrayQuote = textDisplay.querySelectorAll('span');
-        arrayQuote.forEach(span => {
-            span.classList.remove('correct');
-            span.classList.remove('incorrect');
-            span.classList.remove('current');
-        });
-        if (arrayQuote.length > 0) arrayQuote[0].classList.add('current');
-        highlightKey(currentText[0]);
+        typingInput.disabled = true;
+
+        // Go back to map
+        document.getElementById('adventure-battle').classList.add('hidden');
+        textDisplay.classList.add('hidden');
+        document.getElementById('adventure-map').classList.remove('hidden');
 
     }, 1500); // 1.5s delay
 }
@@ -635,6 +635,7 @@ function startRaceGame() {
     document.getElementById('player-car').style.left = '0%';
     document.getElementById('cpu-car-1').style.left = '0%';
     document.getElementById('cpu-car-2').style.left = '0%';
+    document.getElementById('cpu-car-3').style.left = '0%';
 
     nextText();
 
@@ -654,21 +655,25 @@ function updateRaceVisuals(currentLen, totalLen) {
 function startCPUCars() {
     let cpu1Progress = 0;
     let cpu2Progress = 0;
+    let cpu3Progress = 0;
     const finishLine = 90;
 
     raceInterval = setInterval(() => {
         if (!gameActive) return;
 
         cpu1Progress += 0.2; // Slow
-        cpu2Progress += 0.35; // Fast
+        cpu2Progress += 0.35; // Medium
+        cpu3Progress += 0.45; // Fast
 
         const c1 = document.getElementById('cpu-car-1');
         const c2 = document.getElementById('cpu-car-2');
+        const c3 = document.getElementById('cpu-car-3');
 
         if(c1) c1.style.left = `${Math.min(cpu1Progress, 90)}%`;
         if(c2) c2.style.left = `${Math.min(cpu2Progress, 90)}%`;
+        if(c3) c3.style.left = `${Math.min(cpu3Progress, 90)}%`;
 
-        if (cpu1Progress >= finishLine || cpu2Progress >= finishLine) {
+        if (cpu1Progress >= finishLine || cpu2Progress >= finishLine || cpu3Progress >= finishLine) {
             // CPU Wins
             endGame();
             // Could add custom message here
