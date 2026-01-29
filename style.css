@@ -342,3 +342,35 @@ footer {
   75% { transform: translateX(-50%) rotate(-5deg); }
   100% { transform: translateX(-50%) rotate(0deg); }
 }
+
+/* Navbar Styles */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eee;
+}
+
+.nav-btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.nav-select {
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 50px;
+    border: 2px solid #ddd;
+    font-family: 'Comic Neue', cursive, sans-serif;
+    outline: none;
+    cursor: pointer;
+    background-color: white;
+}
+
+.nav-select:focus {
+    border-color: var(--accent-color);
+}

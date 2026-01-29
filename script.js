@@ -185,7 +185,9 @@ const VisualEngine = {
 };
 
 function startGame(level) {
+    clearInterval(timerInterval); // Ensure no previous timer is running
     currentLevel = level;
+
     // Hide all difficulty selectors and headers
     document.querySelectorAll('.difficulty-selector').forEach(el => el.classList.add('hidden'));
     const skillHeading = document.querySelector('h3');
@@ -205,6 +207,32 @@ function startGame(level) {
     
     // Start timer on first input
     typingInput.addEventListener('keydown', startTimerOnce);
+}
+
+function goHome() {
+    // Reset game state
+    clearInterval(timerInterval);
+    gameActive = false;
+
+    // Hide game area and results
+    gameArea.classList.add('hidden');
+    resultsModal.classList.add('hidden');
+
+    // Show menu elements
+    document.querySelector('header').classList.remove('hidden');
+    document.querySelectorAll('.difficulty-selector').forEach(el => el.classList.remove('hidden'));
+    const skillHeading = document.querySelector('h3');
+    if (skillHeading) skillHeading.classList.remove('hidden');
+
+    // Reset Visual Engine
+    if (VisualEngine.stage) {
+        VisualEngine.stage.className = '';
+        VisualEngine.stage.innerHTML = '';
+        VisualEngine.currentTheme = null;
+    }
+
+    // Reset Dropdown
+    document.getElementById('quick-jump').selectedIndex = 0;
 }
 
 function startTimerOnce() {

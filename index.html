@@ -9,6 +9,24 @@
 </head>
 <body>
     <div class="container">
+        <nav class="navbar">
+            <button class="btn nav-btn" onclick="goHome()">🏠 Home</button>
+            <select id="quick-jump" class="nav-select" onchange="if(this.value) startGame(this.value)">
+                <option value="" disabled selected>🚀 Jump to Game...</option>
+                <optgroup label="Levels">
+                    <option value="easy">Easy (K-2)</option>
+                    <option value="medium">Medium (3-4)</option>
+                    <option value="hard">Hard (5-6)</option>
+                </optgroup>
+                <optgroup label="Skills">
+                    <option value="shift">Shift & Capitals</option>
+                    <option value="numbers">Numbers</option>
+                    <option value="symbols">Symbols</option>
+                    <option value="speed">Speed Run</option>
+                    <option value="accuracy">Accuracy Master</option>
+                </optgroup>
+            </select>
+        </nav>
         <header>
             <h1>Typing Fun for Kids! ⌨️</h1>
             <p>Select your level to start typing!</p>
