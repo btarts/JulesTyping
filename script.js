@@ -94,6 +94,7 @@ let gameDuration = 60;
 let timeLeft = 60;
 let totalTyped = 0;
 let correctTyped = 0;
+let cachedSpans = [];
 
 // Space Mode Globals
 let spaceGameInterval = null;
@@ -177,10 +178,12 @@ function nextText() {
 
 function renderText() {
     textDisplay.innerHTML = '';
+    cachedSpans = [];
     currentText.split('').forEach((char, index) => {
         const charSpan = document.createElement('span');
         charSpan.innerText = char;
         textDisplay.appendChild(charSpan);
+        cachedSpans.push(charSpan);
         if (index === 0) {
             charSpan.classList.add('current');
         }
@@ -192,7 +195,7 @@ function renderText() {
 }
 
 function handleInput() {
-    const arrayQuote = textDisplay.querySelectorAll('span');
+    const arrayQuote = cachedSpans;
     const arrayValue = typingInput.value.split('');
     
     let correct = true;
@@ -283,7 +286,7 @@ function endGame() {
     // Calculate final stats
     // We need to account for what was currently typed in the input
     const arrayValue = typingInput.value.split('');
-    const arrayQuote = textDisplay.querySelectorAll('span');
+    const arrayQuote = cachedSpans;
     let currentSessionCorrect = 0;
      arrayQuote.forEach((characterSpan, index) => {
         const character = arrayValue[index];
@@ -318,6 +321,7 @@ function cleanupGame() {
     typingInput.removeEventListener('input', handleSpaceInput);
 
     // Reset stats
+    cachedSpans = [];
     timeLeft = gameDuration;
     timeEl.innerText = timeLeft;
     wpmEl.innerText = 0;
