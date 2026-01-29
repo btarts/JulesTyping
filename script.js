@@ -83,21 +83,21 @@ const wordLists = {
         "Start *bold* and _italic_."
     ],
     speed: [
-        "the of and a to in is you that it",
-        "he was for on are as with his they I",
-        "at be this have from or one had by word",
-        "but not what all were we when your can said",
-        "there use an each which she do how their if",
-        "The quick brown fox jumps over the lazy dog",
-        "Pack my box with five dozen liquor jugs",
-        "How vexingly quick daft zebras jump",
-        "Sphinx of black quartz judge my vow",
-        "The five boxing wizards jump quickly",
-        "as soon as possible",
-        "thank you very much",
-        "have a nice day",
-        "good luck to you",
-        "see you later alligator"
+        "abc def ghi jkl mno pqr stu vwx yz",
+        "z y x w v u t s r q p o n m l k j i h g f e d c b a",
+        "qwerty uiop asdfgh jkl zxcvbnm",
+        "mnbvcxz lkjhgfds apoiuytrewq",
+        "aazz ssxx ddcc ffvv ggbb hhnn jjmm",
+        "aq sw de fr gt hy ju ki lo p;",
+        "za xs cd vf bg nh mj ,. /?",
+        "pl ok ij uh yg tf rd es wa",
+        "qaz wsx edc rfv tgb yhn ujm ikl olp",
+        "poi lkj mnb uy tr ew q",
+        "aa bb cc dd ee ff gg hh ii jj kk ll mm nn oo pp",
+        "abab cdcd efef ghgh ijij klkl mnmn opop",
+        "abcde fghij klmno pqrst uvwxy z",
+        "a b c d e f g h i j k l m n o p q r s t u v w x y z",
+        "zyxwvutsrqponmlkjihgfedcba"
     ],
     accuracy: [
         "Accommodate the embarrassment of the rhythm.",
@@ -128,6 +128,16 @@ let timeLeft = 60;
 let totalTyped = 0;
 let correctTyped = 0;
 
+// Space Mode Globals
+let spaceGameInterval = null;
+let asteroidSpawnInterval = null;
+let activeAsteroids = [];
+let spaceLives = 3;
+let spaceTarget = null; // The asteroid currently being typed
+
+// Race Mode Globals
+let raceInterval = null;
+
 const textDisplay = document.getElementById('text-display');
 const typingInput = document.getElementById('typing-input');
 const timeEl = document.getElementById('time');
@@ -140,6 +150,10 @@ const finalWpmEl = document.getElementById('final-wpm');
 const finalAccuracyEl = document.getElementById('final-accuracy');
 const mainMenu = document.getElementById('main-menu');
 
+const adventureArea = document.getElementById('adventure-area');
+const spaceArea = document.getElementById('space-area');
+const raceArea = document.getElementById('race-area');
+
 function startGame(level) {
     currentLevel = level;
 
@@ -149,24 +163,28 @@ function startGame(level) {
     
     createKeyboard();
 
-    resetGame();
-    nextText();
-    
-    typingInput.disabled = false;
-    typingInput.focus();
-    typingInput.addEventListener('input', handleInput);
-    
-    // Start timer on first input
-    typingInput.addEventListener('keydown', startTimerOnce);
+    cleanupGame(); // Clean previous state
+
+    if (level === 'shift') {
+        startAdventureGame();
+    } else if (level === 'symbols') {
+        startSpaceGame();
+    } else if (level === 'speed') {
+        startRaceGame();
+    } else {
+        // Standard modes
+        textDisplay.classList.remove('hidden');
+        nextText();
+
+        typingInput.disabled = false;
+        typingInput.focus();
+        typingInput.addEventListener('input', handleInput);
+        typingInput.addEventListener('keydown', startTimerOnce);
+    }
 }
 
 function goHome() {
-    // Stop game
-    clearInterval(timerInterval);
-    gameActive = false;
-
-    // Reset state
-    resetGame();
+    cleanupGame();
 
     // Hide game, show menu
     gameArea.classList.add('hidden');
@@ -310,10 +328,19 @@ function endGame() {
     resultsModal.classList.remove('hidden');
 }
 
-function resetGame() {
+function cleanupGame() {
     clearInterval(timerInterval);
+    clearInterval(spaceGameInterval);
+    clearInterval(asteroidSpawnInterval);
+    clearInterval(raceInterval);
     gameActive = false;
+
+    // Remove all possible event listeners we might have added
     typingInput.removeEventListener('keydown', startTimerOnce);
+    typingInput.removeEventListener('input', handleInput);
+    typingInput.removeEventListener('input', handleSpaceInput);
+
+    // Reset stats
     timeLeft = gameDuration;
     timeEl.innerText = timeLeft;
     wpmEl.innerText = 0;
@@ -322,19 +349,333 @@ function resetGame() {
     correctTyped = 0;
     typingInput.value = '';
 
-    // Also reset text display visual state if needed, but nextText() handles it.
-    // Wait, nextText is called in startGame, but in goHome we might want to clear it?
-    // goHome calls resetGame.
-    // If we go home, we don't necessarily need to clear the text display, but it's cleaner.
+    // Hide all mode specific areas
+    textDisplay.classList.add('hidden');
+    document.getElementById('lives-stat').classList.add('hidden');
+    if (adventureArea) adventureArea.classList.add('hidden');
+    if (spaceArea) spaceArea.classList.add('hidden');
+    if (raceArea) raceArea.classList.add('hidden');
+
     textDisplay.innerHTML = '';
+
+    // Remove asteroids
+    document.querySelectorAll('.asteroid').forEach(el => el.remove());
+    activeAsteroids = [];
+    spaceTarget = null;
 }
 
 function restartGame() {
-    // Reload page or reset state
-    // location.reload();
-    // Better:
-    resetGame();
+    cleanupGame();
     startGame(currentLevel);
+}
+
+// Placeholders for new modes
+function startAdventureGame() {
+    adventureArea.classList.remove('hidden');
+    textDisplay.classList.remove('hidden');
+
+    // Reset Avatar positions
+    document.getElementById('player-avatar').style.left = '10%';
+    document.getElementById('monster-avatar').style.opacity = '1';
+    document.getElementById('monster-health-fill').style.width = '100%';
+
+    nextText();
+
+    typingInput.disabled = false;
+    typingInput.focus();
+    typingInput.addEventListener('input', handleInput);
+    typingInput.addEventListener('keydown', startTimerOnce);
+}
+
+function updateAdventureVisuals(currentLen, totalLen) {
+    const healthPercent = 100 - ((currentLen / totalLen) * 100);
+    document.getElementById('monster-health-fill').style.width = `${healthPercent}%`;
+}
+
+function triggerLootAndMove() {
+    // Show Loot
+    const lootEl = document.getElementById('loot-display');
+    lootEl.classList.remove('hidden');
+
+    // Animate Monster Death
+    const monsterEl = document.getElementById('monster-avatar');
+    monsterEl.style.transform = 'rotate(180deg) scale(0.5)';
+    monsterEl.style.opacity = '0';
+
+    // Move Player
+    const playerEl = document.getElementById('player-avatar');
+    playerEl.style.left = '80%'; // Move to monster position
+
+    setTimeout(() => {
+        // Reset Visuals for next round
+        lootEl.classList.add('hidden');
+        monsterEl.style.transform = 'none';
+        monsterEl.style.opacity = '1';
+        playerEl.style.left = '10%';
+        document.getElementById('monster-health-fill').style.width = '100%';
+
+        // Add score
+        totalTyped += currentText.length;
+        correctTyped += currentText.length;
+
+        nextText();
+        typingInput.value = '';
+        // Reset highlights
+        const arrayQuote = textDisplay.querySelectorAll('span');
+        arrayQuote.forEach(span => {
+            span.classList.remove('correct');
+            span.classList.remove('incorrect');
+            span.classList.remove('current');
+        });
+        if (arrayQuote.length > 0) arrayQuote[0].classList.add('current');
+        highlightKey(currentText[0]);
+
+    }, 1500); // 1.5s delay
+}
+
+function startSpaceGame() {
+    spaceArea.classList.remove('hidden');
+    document.getElementById('lives-stat').classList.remove('hidden');
+    spaceLives = 3;
+    document.getElementById('lives').innerText = spaceLives;
+
+    activeAsteroids = [];
+    spaceTarget = null;
+
+    typingInput.disabled = false;
+    typingInput.focus();
+    // Use specific handler
+    typingInput.addEventListener('input', handleSpaceInput);
+
+    gameActive = true;
+
+    // Start Loops
+    spaceGameInterval = setInterval(updateSpaceGame, 50); // 20fps
+    asteroidSpawnInterval = setInterval(spawnAsteroid, 2000); // Every 2s
+}
+
+function spawnAsteroid() {
+    if (!gameActive) return;
+
+    // Get random word/symbol
+    const list = wordLists.symbols;
+    const randomSentence = list[Math.floor(Math.random() * list.length)];
+    const words = randomSentence.split(' ');
+    const text = words[Math.floor(Math.random() * words.length)];
+
+    const asteroid = document.createElement('div');
+    asteroid.classList.add('asteroid');
+    asteroid.innerText = text;
+
+    const gameWidth = spaceArea.clientWidth;
+    const x = Math.random() * (gameWidth - 100) + 50; // Padding
+
+    asteroid.style.left = `${x}px`;
+    asteroid.style.top = '0px';
+
+    document.getElementById('space-canvas').appendChild(asteroid);
+
+    activeAsteroids.push({
+        el: asteroid,
+        text: text,
+        remainingText: text,
+        x: x,
+        y: 0,
+        speed: 1 + (Math.random() * 2) // Speed 1-3
+    });
+}
+
+function updateSpaceGame() {
+    const height = spaceArea.clientHeight;
+
+    activeAsteroids.forEach((ast, index) => {
+        ast.y += ast.speed;
+        ast.el.style.top = `${ast.y}px`;
+
+        // Check collision
+        if (ast.y > height - 50) { // Hit bottom
+            damagePlayer();
+            // Remove asteroid
+            ast.el.remove();
+            activeAsteroids.splice(index, 1);
+            if (ast === spaceTarget) spaceTarget = null;
+        }
+    });
+}
+
+function handleSpaceInput() {
+    const inputVal = typingInput.value;
+    if (inputVal.length === 0) return;
+
+    const char = inputVal.slice(-1); // Last typed char
+
+    // If we have a target, check against it
+    if (spaceTarget) {
+        if (spaceTarget.remainingText.startsWith(char)) {
+            // Correct
+            spaceTarget.remainingText = spaceTarget.remainingText.substring(1);
+            // Visual feedback? maybe highlight the asteroid text
+            spaceTarget.el.innerHTML = `<span class="correct">${spaceTarget.text.slice(0, spaceTarget.text.length - spaceTarget.remainingText.length)}</span>${spaceTarget.remainingText}`;
+
+            shootLaser(spaceTarget.el);
+
+            if (spaceTarget.remainingText.length === 0) {
+                // Destroyed
+                spaceTarget.el.remove();
+                activeAsteroids = activeAsteroids.filter(a => a !== spaceTarget);
+                spaceTarget = null;
+                totalTyped += 1; // Simplify score
+            }
+        } else {
+            // Wrong key for target?
+            // Maybe play error sound or shake
+        }
+    } else {
+        // Find a target that starts with this char
+        // Prefer lowest (highest y)
+        const candidates = activeAsteroids.filter(a => a.remainingText.startsWith(char));
+        if (candidates.length > 0) {
+            // Sort by Y descending
+            candidates.sort((a, b) => b.y - a.y);
+            spaceTarget = candidates[0];
+
+            // Process the hit
+            spaceTarget.remainingText = spaceTarget.remainingText.substring(1);
+            spaceTarget.el.innerHTML = `<span class="correct">${spaceTarget.text.slice(0, spaceTarget.text.length - spaceTarget.remainingText.length)}</span>${spaceTarget.remainingText}`;
+            spaceTarget.el.classList.add('targeted');
+
+            shootLaser(spaceTarget.el);
+
+            if (spaceTarget.remainingText.length === 0) {
+                spaceTarget.el.remove();
+                activeAsteroids = activeAsteroids.filter(a => a !== spaceTarget);
+                spaceTarget = null;
+                totalTyped += 1;
+            }
+        }
+    }
+
+    // Always clear input in this mode so we capture raw keystrokes essentially
+    typingInput.value = '';
+}
+
+function damagePlayer() {
+    spaceLives--;
+    document.getElementById('lives').innerText = spaceLives;
+    if (spaceLives <= 0) {
+        endGame();
+    }
+}
+
+function shootLaser(targetEl) {
+    const canvas = document.getElementById('space-canvas');
+    const laser = document.createElement('div');
+    laser.classList.add('laser');
+
+    // Calculate angle? For now just vertical line or simple beam
+    // Let's make it a line from ship to target
+    const ship = document.getElementById('spaceship');
+    const shipRect = ship.getBoundingClientRect();
+    const targetRect = targetEl.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+
+    const startX = shipRect.left + shipRect.width / 2 - canvasRect.left;
+    const startY = shipRect.top - canvasRect.top;
+
+    const endX = targetRect.left + targetRect.width / 2 - canvasRect.left;
+    const endY = targetRect.top + targetRect.height - canvasRect.top;
+
+    const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+    const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+
+    laser.style.height = `${length}px`; // Actually width if we rotate, but let's use height and rotate
+    // Wait, div line usually is height.
+    // Let's use simple CSS trick: rotate from bottom center
+    // Rotation is 90 deg offset because 0 deg is right usually.
+    // If using height, 0 deg is down?
+
+    // Simpler: Just position laser at target center and animate opacity
+    // Or just a flash.
+
+    // Let's try drawing a line
+    laser.style.left = `${startX}px`;
+    laser.style.top = `${startY}px`;
+    laser.style.width = '4px';
+    laser.style.height = `${length}px`;
+    laser.style.transformOrigin = 'top center';
+    // Angle needs to be calculated carefully.
+    // atan2(y, x). y is negative (up).
+    const angle2 = Math.atan2(endX - startX, startY - endY) * (180 / Math.PI); // Angle from vertical up
+    laser.style.transform = `rotate(${-angle2}deg)`; // Negative?
+
+    // Actually, let's just use the simplest "beam" - a quick flash on the target
+    // The complexity of drawing a rotated line in pure DOM without SVG/Canvas is annoying.
+    // I'll stick to the "Laser" class I added which is just a vertical line, but maybe I won't use it for angled shots.
+
+    // Alternative: A small explosion at the target.
+    const explosion = document.createElement('div');
+    explosion.style.position = 'absolute';
+    explosion.style.left = `${endX}px`;
+    explosion.style.top = `${endY}px`;
+    explosion.style.width = '20px';
+    explosion.style.height = '20px';
+    explosion.style.background = '#f44336';
+    explosion.style.borderRadius = '50%';
+    explosion.style.zIndex = '100';
+    canvas.appendChild(explosion);
+
+    setTimeout(() => explosion.remove(), 100);
+}
+
+function startRaceGame() {
+    raceArea.classList.remove('hidden');
+    textDisplay.classList.remove('hidden');
+
+    // Reset cars
+    document.getElementById('player-car').style.left = '0%';
+    document.getElementById('cpu-car-1').style.left = '0%';
+    document.getElementById('cpu-car-2').style.left = '0%';
+
+    nextText();
+
+    typingInput.disabled = false;
+    typingInput.focus();
+    typingInput.addEventListener('input', handleInput);
+    typingInput.addEventListener('keydown', startTimerOnce);
+
+    startCPUCars();
+}
+
+function updateRaceVisuals(currentLen, totalLen) {
+    const progress = (currentLen / totalLen) * 90; // Max 90%
+    document.getElementById('player-car').style.left = `${progress}%`;
+}
+
+function startCPUCars() {
+    let cpu1Progress = 0;
+    let cpu2Progress = 0;
+    const finishLine = 90;
+
+    raceInterval = setInterval(() => {
+        if (!gameActive) return;
+
+        cpu1Progress += 0.2; // Slow
+        cpu2Progress += 0.35; // Fast
+
+        const c1 = document.getElementById('cpu-car-1');
+        const c2 = document.getElementById('cpu-car-2');
+
+        if(c1) c1.style.left = `${Math.min(cpu1Progress, 90)}%`;
+        if(c2) c2.style.left = `${Math.min(cpu2Progress, 90)}%`;
+
+        if (cpu1Progress >= finishLine || cpu2Progress >= finishLine) {
+            // CPU Wins
+            endGame();
+            // Could add custom message here
+            const modalH2 = resultsModal.querySelector('h2');
+            if(modalH2) modalH2.innerText = "CPU Won! 🏎️";
+        }
+    }, 100);
 }
 
 function createKeyboard() {
