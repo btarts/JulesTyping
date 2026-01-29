@@ -96,6 +96,9 @@ header p {
 .level-hard { background-color: #FFEBEE; border-color: #EF9A9A; }
 .level-hard:hover { border-color: #F44336; }
 
+.skill-keys { background-color: #E1F5FE; border-color: #81D4FA; }
+.skill-keys:hover { border-color: #03A9F4; }
+
 .skill-shift { background-color: #E8EAF6; border-color: #9FA8DA; }
 .skill-shift:hover { border-color: #3F51B5; }
 
@@ -249,6 +252,58 @@ footer {
     color: #888;
 }
 
+/* Virtual Keyboard */
+#virtual-keyboard {
+    margin-top: 20px;
+    background: #e0e0e0;
+    padding: 15px;
+    border-radius: 10px;
+    display: inline-block;
+    user-select: none;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+    gap: 5px;
+}
+
+.key {
+    min-width: 40px;
+    height: 40px;
+    background: white;
+    border-bottom: 3px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: #444;
+    font-size: 1.1rem;
+    transition: all 0.1s;
+    padding: 0 5px;
+}
+
+.key:active, .key.active {
+    background-color: var(--accent-color);
+    color: white;
+    border-bottom-color: #1976D2;
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+}
+
+.key.special {
+    font-size: 0.9rem;
+    background-color: #f5f5f5;
+}
+
+.key.space {
+    width: 250px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
     .container {
@@ -269,5 +324,19 @@ footer {
         flex-direction: column;
         gap: 10px;
         font-size: 1.2rem;
+    }
+
+    .key {
+        min-width: 25px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+
+    .key.special {
+        font-size: 0.7rem;
+    }
+
+    .key.space {
+        width: 150px;
     }
 }

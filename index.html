@@ -34,6 +34,11 @@
                 </div>
 
                 <!-- Skill Practice -->
+                <div class="game-card skill-keys" onclick="startGame('find_keys')">
+                    <div class="icon">⌨️</div>
+                    <h3>Keys</h3>
+                    <p>Find the Keys</p>
+                </div>
                 <div class="game-card skill-shift" onclick="startGame('shift')">
                     <div class="icon">⬆️</div>
                     <h3>Shift</h3>
@@ -79,6 +84,8 @@
 
             <textarea id="typing-input" placeholder="Start typing here..." autofocus></textarea>
             
+            <div id="virtual-keyboard"></div>
+
             <button id="restart-btn" class="btn hidden" onclick="restartGame()">Play Again</button>
         </div>
         

@@ -20,6 +20,18 @@ const wordLists = {
         "Computers are machines that can process information very quickly and accurately.",
         "Friendship is one of the most important things in life because friends help each other."
     ],
+    find_keys: [
+        "a s d f j k l ;",
+        "q w e r u i o p",
+        "z x c v m n",
+        "g h t y b n",
+        "a b c d e f g h i j k l m n o p q r s t u v w x y z",
+        "1 2 3 4 5 6 7 8 9 0",
+        "f j f j f j",
+        "d k d k d k",
+        "s l s l s l",
+        "a ; a ; a ;"
+    ],
     shift: [
         "New York City is known as the Big Apple.",
         "The United States of America has 50 states.",
@@ -135,6 +147,8 @@ function startGame(level) {
     mainMenu.classList.add('hidden');
     gameArea.classList.remove('hidden');
     
+    createKeyboard();
+
     resetGame();
     nextText();
     
@@ -186,6 +200,10 @@ function renderText() {
             charSpan.classList.add('current');
         }
     });
+    // Highlight first key
+    if (currentText.length > 0) {
+        highlightKey(currentText[0]);
+    }
 }
 
 function handleInput() {
@@ -219,6 +237,10 @@ function handleInput() {
     // Add current class to the next character to be typed
     if (arrayValue.length < arrayQuote.length) {
         arrayQuote[arrayValue.length].classList.add('current');
+        highlightKey(arrayQuote[arrayValue.length].innerText);
+    } else {
+        // Clear keyboard highlight if done
+        highlightKey(null);
     }
     
     // Update stats
@@ -313,4 +335,74 @@ function restartGame() {
     // Better:
     resetGame();
     startGame(currentLevel);
+}
+
+function createKeyboard() {
+    const keyboardContainer = document.getElementById('virtual-keyboard');
+    if (!keyboardContainer || keyboardContainer.children.length > 0) return;
+
+    const layout = [
+        ["`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "Backspace"],
+        ["Tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\"],
+        ["Caps", "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "Enter"],
+        ["Shift", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "Shift"],
+        ["Space"]
+    ];
+
+    layout.forEach(row => {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'keyboard-row';
+        row.forEach(key => {
+            const keyDiv = document.createElement('div');
+            keyDiv.className = 'key';
+            if (key === "Space") {
+                keyDiv.innerText = "Space";
+                keyDiv.dataset.key = " ";
+            } else {
+                keyDiv.innerText = key;
+                keyDiv.dataset.key = key;
+            }
+
+            if (key.length > 1) keyDiv.classList.add('special');
+            if (key === "Space") keyDiv.classList.add('space');
+
+            rowDiv.appendChild(keyDiv);
+        });
+        keyboardContainer.appendChild(rowDiv);
+    });
+}
+
+function highlightKey(char) {
+    // Remove active class from all keys
+    document.querySelectorAll('.key').forEach(k => k.classList.remove('active'));
+
+    if (char == null) return;
+
+    let keysToHighlight = [];
+    const shiftMap = {
+        '~': '`', '!': '1', '@': '2', '#': '3', '$': '4', '%': '5', '^': '6', '&': '7', '*': '8', '(': '9', ')': '0', '_': '-', '+': '=',
+        '{': '[', '}': ']', '|': '\\', ':': ';', '"': "'", '<': ',', '>': '.', '?': '/'
+    };
+
+    if (shiftMap[char]) {
+        keysToHighlight.push('Shift');
+        keysToHighlight.push(shiftMap[char]);
+    } else if (char >= 'A' && char <= 'Z') {
+        keysToHighlight.push('Shift');
+        keysToHighlight.push(char.toLowerCase());
+    } else {
+        keysToHighlight.push(char);
+    }
+
+    keysToHighlight.forEach(keyVal => {
+        // Find key by data-key
+        // We need to handle duplicate Shift keys
+        if (keyVal === 'Shift') {
+             const shifts = document.querySelectorAll('.key[data-key="Shift"]');
+             shifts.forEach(s => s.classList.add('active'));
+        } else {
+             const keyEl = document.querySelector(`.key[data-key="${keyVal}"]`);
+             if (keyEl) keyEl.classList.add('active');
+        }
+    });
 }
