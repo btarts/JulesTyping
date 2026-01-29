@@ -76,10 +76,54 @@
                 <div class="stat">⏱️ Time: <span id="time">60</span>s</div>
                 <div class="stat">⚡ WPM: <span id="wpm">0</span></div>
                 <div class="stat">🎯 Accuracy: <span id="accuracy">100</span>%</div>
+                <div id="lives-stat" class="stat hidden">❤️ Lives: <span id="lives">3</span></div>
             </div>
 
+            <!-- Standard Mode Display -->
             <div class="text-display" id="text-display">
                 <!-- Text will appear here -->
+            </div>
+
+            <!-- Adventure Mode Display -->
+            <div id="adventure-area" class="hidden">
+                <div class="map-container">
+                    <div class="map-path"></div>
+                    <div id="player-avatar" class="avatar player">🧙</div>
+                    <div id="monster-avatar" class="avatar monster">🐉</div>
+                </div>
+                <div id="monster-health-bar">
+                    <div id="monster-health-fill"></div>
+                </div>
+                <div id="loot-display" class="hidden">💎 +1 Gem!</div>
+            </div>
+
+            <!-- Space Mode Display -->
+            <div id="space-area" class="hidden">
+                <div id="space-canvas">
+                    <!-- Asteroids will be injected here -->
+                    <div id="spaceship">🚀</div>
+                </div>
+            </div>
+
+            <!-- Race Mode Display -->
+            <div id="race-area" class="hidden">
+                <div class="race-track">
+                    <div class="track-lane">
+                        <div class="car-label">You</div>
+                        <div id="player-car" class="car">🏎️</div>
+                        <div class="finish-line">🏁</div>
+                    </div>
+                    <div class="track-lane">
+                        <div class="car-label">CPU 1</div>
+                        <div id="cpu-car-1" class="car">🚙</div>
+                        <div class="finish-line">🏁</div>
+                    </div>
+                    <div class="track-lane">
+                        <div class="car-label">CPU 2</div>
+                        <div id="cpu-car-2" class="car">🚕</div>
+                        <div class="finish-line">🏁</div>
+                    </div>
+                </div>
             </div>
 
             <textarea id="typing-input" placeholder="Start typing here..." autofocus></textarea>
