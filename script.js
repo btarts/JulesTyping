@@ -464,8 +464,8 @@ function spawnAsteroid() {
     // Get random word/symbol
     const list = wordLists.symbols;
     const randomSentence = list[Math.floor(Math.random() * list.length)];
-    const words = randomSentence.split(' ');
-    const text = words[Math.floor(Math.random() * words.length)];
+    // Pick a random character from the group to make it one symbol per meteor
+    const text = randomSentence.charAt(Math.floor(Math.random() * randomSentence.length));
 
     const asteroid = document.createElement('div');
     asteroid.classList.add('asteroid');
@@ -618,17 +618,12 @@ function shootLaser(targetEl) {
 
     // Alternative: A small explosion at the target.
     const explosion = document.createElement('div');
-    explosion.style.position = 'absolute';
+    explosion.classList.add('explosion');
     explosion.style.left = `${endX}px`;
     explosion.style.top = `${endY}px`;
-    explosion.style.width = '20px';
-    explosion.style.height = '20px';
-    explosion.style.background = '#f44336';
-    explosion.style.borderRadius = '50%';
-    explosion.style.zIndex = '100';
     canvas.appendChild(explosion);
 
-    setTimeout(() => explosion.remove(), 100);
+    setTimeout(() => explosion.remove(), 300);
 }
 
 function startRaceGame() {
