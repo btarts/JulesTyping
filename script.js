@@ -19,6 +19,41 @@ const wordLists = {
         "Elephants are the largest living land animals and have very long trunks.",
         "Computers are machines that can process information very quickly and accurately.",
         "Friendship is one of the most important things in life because friends help each other."
+    ],
+    shift: [
+        "New York City is known as the Big Apple.",
+        "The United States of America has 50 states.",
+        "Harry Potter and the Sorcerer's Stone.",
+        "Microsoft, Apple, Google, and Amazon are tech giants.",
+        "The Quick Brown Fox Jumps Over The Lazy Dog."
+    ],
+    numbers: [
+        "1 2 3 4 5 6 7 8 9 0",
+        "My phone number is 555-0199.",
+        "The year is 2023 and the time is 12:00 PM.",
+        "10 + 20 = 30 and 100 - 50 = 50.",
+        "There are 365 days in a year and 24 hours in a day."
+    ],
+    symbols: [
+        "Hello, world! How are you today?",
+        "user@example.com is a sample email address.",
+        "Prices start at $9.99 for the first month.",
+        "Use #hashtag to tag your posts!",
+        "HTML uses tags like <div> and <span>."
+    ],
+    speed: [
+        "the of and a to in is you that it",
+        "he was for on are as with his they I",
+        "at be this have from or one had by word",
+        "but not what all were we when your can said",
+        "there use an each which she do how their if"
+    ],
+    accuracy: [
+        "Accommodate the embarrassment of the rhythm.",
+        "The pronunciation of the word queue is interesting.",
+        "Mischievous behavior can lead to unnecessary trouble.",
+        "Conscience is the inner voice that warns us.",
+        "Maintenance of the vehicle is necessary for safety."
     ]
 };
 
@@ -46,7 +81,11 @@ const finalAccuracyEl = document.getElementById('final-accuracy');
 
 function startGame(level) {
     currentLevel = level;
-    difficultySelector.style.display = 'none';
+    // Hide all difficulty selectors and headers
+    document.querySelectorAll('.difficulty-selector').forEach(el => el.classList.add('hidden'));
+    const skillHeading = document.querySelector('h3');
+    if (skillHeading) skillHeading.classList.add('hidden');
+
     gameArea.classList.remove('hidden');
     document.querySelector('header').classList.add('hidden'); // Hide header to save space
     
