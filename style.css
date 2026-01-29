@@ -26,8 +26,8 @@ body {
     padding: 2rem;
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    width: 80%;
-    max-width: 800px;
+    width: 90%;
+    max-width: 900px;
     text-align: center;
 }
 
@@ -42,45 +42,91 @@ header p {
     color: #666;
 }
 
-.difficulty-selector {
-    display: flex;
-    justify-content: center;
+/* Grid Menu */
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 20px;
-    margin: 2rem 0;
-    flex-wrap: wrap;
-}
-
-.btn {
-    padding: 15px 30px;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    font-family: 'Comic Neue', cursive, sans-serif;
-    font-weight: bold;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-#level-easy { background-color: #81C784; color: white; }
-#level-medium { background-color: #FFB74D; color: white; }
-#level-hard { background-color: #E57373; color: white; }
-
-#skill-shift { background-color: #7986CB; color: white; }
-#skill-numbers { background-color: #4DB6AC; color: white; }
-#skill-symbols { background-color: #BA68C8; color: white; }
-#skill-speed { background-color: #FDD835; color: #333; }
-#skill-accuracy { background-color: #A1887F; color: white; }
-
-h3 {
-    color: #555;
-    font-size: 2rem;
     margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.game-card {
+    background-color: #f9f9f9;
+    border-radius: 20px;
+    padding: 20px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 3px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.game-card .icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.game-card h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #444;
+}
+
+.game-card p {
+    margin: 5px 0 0;
+    color: #777;
+    font-size: 1rem;
+}
+
+/* Card Themes */
+.level-easy { background-color: #E8F5E9; border-color: #A5D6A7; }
+.level-easy:hover { border-color: #4CAF50; }
+
+.level-medium { background-color: #FFF3E0; border-color: #FFCC80; }
+.level-medium:hover { border-color: #FF9800; }
+
+.level-hard { background-color: #FFEBEE; border-color: #EF9A9A; }
+.level-hard:hover { border-color: #F44336; }
+
+.skill-shift { background-color: #E8EAF6; border-color: #9FA8DA; }
+.skill-shift:hover { border-color: #3F51B5; }
+
+.skill-numbers { background-color: #E0F2F1; border-color: #80CBC4; }
+.skill-numbers:hover { border-color: #009688; }
+
+.skill-symbols { background-color: #F3E5F5; border-color: #CE93D8; }
+.skill-symbols:hover { border-color: #9C27B0; }
+
+.skill-speed { background-color: #FFFDE7; border-color: #FFF59D; }
+.skill-speed:hover { border-color: #FFEB3B; }
+
+.skill-accuracy { background-color: #EFEBE9; border-color: #BCAAA4; }
+.skill-accuracy:hover { border-color: #795548; }
+
+/* Game Area */
+.game-header {
+    display: flex;
+    justify-content: flex-start;
     margin-bottom: 1rem;
+}
+
+#home-btn {
+    background-color: #78909C;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1rem;
+}
+
+#home-btn:hover {
+    background-color: #546E7A;
 }
 
 .stats-bar {
@@ -89,17 +135,17 @@ h3 {
     margin-bottom: 20px;
     font-size: 1.5rem;
     background-color: #f0f0f0;
-    padding: 10px;
-    border-radius: 10px;
+    padding: 15px;
+    border-radius: 15px;
 }
 
 .text-display {
     font-size: 2rem;
     line-height: 1.6;
     background-color: #fff;
-    border: 2px dashed #ccc;
-    padding: 20px;
-    border-radius: 10px;
+    border: 3px dashed #ccc;
+    padding: 30px;
+    border-radius: 15px;
     min-height: 150px;
     margin-bottom: 20px;
     text-align: left;
@@ -116,6 +162,7 @@ h3 {
     color: var(--incorrect-color);
     text-decoration: underline;
     background-color: #ffcdd2;
+    border-radius: 3px;
 }
 
 .current {
@@ -125,17 +172,34 @@ h3 {
 
 #typing-input {
     width: 100%;
-    padding: 15px;
+    padding: 20px;
     font-size: 1.5rem;
-    border: 2px solid #ddd;
-    border-radius: 10px;
+    border: 3px solid #ddd;
+    border-radius: 15px;
     font-family: 'Comic Neue', cursive, sans-serif;
     box-sizing: border-box;
+    transition: border-color 0.2s;
 }
 
 #typing-input:focus {
     outline: none;
     border-color: var(--accent-color);
+}
+
+.btn {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'Comic Neue', cursive, sans-serif;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 .hidden {
@@ -166,19 +230,44 @@ h3 {
 .modal-content h2 {
     color: var(--primary-color);
     font-size: 3rem;
+    margin-bottom: 1rem;
 }
 
 .modal-content p {
     font-size: 2rem;
+    margin: 0.5rem 0;
 }
 
 .modal-content .btn {
     background-color: var(--accent-color);
     color: white;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 footer {
     margin-top: 2rem;
     color: #888;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .container {
+        padding: 1rem;
+        width: 95%;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .text-display {
+        font-size: 1.5rem;
+        padding: 15px;
+    }
+
+    .stats-bar {
+        flex-direction: column;
+        gap: 10px;
+        font-size: 1.2rem;
+    }
 }
