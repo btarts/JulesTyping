@@ -79,6 +79,111 @@ const resultsModal = document.getElementById('results-modal');
 const finalWpmEl = document.getElementById('final-wpm');
 const finalAccuracyEl = document.getElementById('final-accuracy');
 
+// Visual Engine Logic
+const VisualEngine = {
+    stage: document.getElementById('visual-stage'),
+    currentTheme: null,
+
+    themes: {
+        racing: {
+            levels: ['easy', 'speed'],
+            setup: () => `
+                <div class="track"></div>
+                <div class="racer" id="racer-car">🏎️</div>
+                <div class="finish-line">🏁</div>
+            `,
+            update: (pct, wpm, isCorrect) => {
+                const racer = document.getElementById('racer-car');
+                if (racer) {
+                    // Move from left (10px) to right (approx 90%)
+                    const maxLeft = 90;
+                    const minLeft = 2; // %
+                    const pos = minLeft + (pct * (maxLeft - minLeft));
+                    racer.style.left = `${pos}%`;
+                }
+            }
+        },
+        rpg: {
+            levels: ['hard', 'accuracy', 'shift'],
+            setup: () => `
+                <div class="rpg-container">
+                    <div class="hero">
+                        <div class="health-bar-container"><div class="health-bar" style="width: 100%"></div></div>
+                        <div class="avatar">🧙‍♂️</div>
+                    </div>
+                    <div class="monster">
+                        <div class="health-bar-container"><div class="health-bar" id="monster-hp" style="width: 100%"></div></div>
+                        <div class="avatar" id="monster-avatar">🐉</div>
+                    </div>
+                </div>
+            `,
+            update: (pct, wpm, isCorrect) => {
+                const monsterHp = document.getElementById('monster-hp');
+                const monsterAvatar = document.getElementById('monster-avatar');
+                if (monsterHp) {
+                    monsterHp.style.width = `${100 - (pct * 100)}%`;
+
+                    if (isCorrect) {
+                        monsterAvatar.classList.add('damage-flash');
+                        setTimeout(() => monsterAvatar.classList.remove('damage-flash'), 200);
+                    }
+                }
+            }
+        },
+        space: {
+            levels: ['medium', 'numbers', 'symbols'],
+            setup: () => `
+                <div class="ship">🚀</div>
+                <div class="laser-beam" id="laser"></div>
+                <div class="asteroid" id="asteroid-target">☄️</div>
+            `,
+            update: (pct, wpm, isCorrect) => {
+                const asteroid = document.getElementById('asteroid-target');
+                const laser = document.getElementById('laser');
+
+                if (isCorrect && laser) {
+                    laser.classList.add('laser-fire');
+                    asteroid.classList.add('hit');
+                    setTimeout(() => {
+                        laser.classList.remove('laser-fire');
+                        asteroid.classList.remove('hit');
+                    }, 150);
+                }
+            }
+        }
+    },
+
+    init: function(level) {
+        // Determine theme
+        let themeName = null;
+        for (const [key, config] of Object.entries(this.themes)) {
+            if (config.levels.includes(level)) {
+                themeName = key;
+                break;
+            }
+        }
+
+        this.currentTheme = themeName;
+        this.stage.className = ''; // Reset classes
+
+        if (themeName) {
+            this.stage.classList.add('active');
+            this.stage.classList.add(`theme-${themeName}`);
+            this.stage.innerHTML = this.themes[themeName].setup();
+        } else {
+            this.stage.classList.remove('active');
+            this.stage.innerHTML = '';
+        }
+    },
+
+    update: function(currentLen, totalLen, isCorrect) {
+        if (this.currentTheme && this.themes[this.currentTheme].update) {
+            const pct = Math.min(currentLen / totalLen, 1);
+            this.themes[this.currentTheme].update(pct, 0, isCorrect); // WPM not strictly needed for these simple anims
+        }
+    }
+};
+
 function startGame(level) {
     currentLevel = level;
     // Hide all difficulty selectors and headers
@@ -89,6 +194,8 @@ function startGame(level) {
     gameArea.classList.remove('hidden');
     document.querySelector('header').classList.add('hidden'); // Hide header to save space
     
+    VisualEngine.init(level);
+
     resetGame();
     nextText();
     
@@ -167,6 +274,9 @@ function handleInput() {
         accuracyEl.innerText = accuracy;
     }
 
+    // Update visual engine
+    VisualEngine.update(arrayValue.length, currentText.length, correct);
+
     // Check if finished current text
     if (arrayValue.length === currentText.length && correct) {
         // Add score from this round (simplified logic for now, just infinite play until timer runs out)
@@ -175,6 +285,8 @@ function handleInput() {
         totalTyped += currentText.length;
         correctTyped += currentText.length;
         nextText();
+        // Reset visuals for next text
+        VisualEngine.update(0, 1, true);
     }
 }
 
