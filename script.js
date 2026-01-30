@@ -120,6 +120,8 @@ let timeLeft = 60;
 let totalTyped = 0;
 let correctTyped = 0;
 let cachedSpans = [];
+let keyCache = new Map();
+let activeKeys = [];
 
 // Space Mode Globals
 let spaceGameInterval = null;
@@ -922,6 +924,8 @@ function createKeyboard() {
     const keyboardContainer = document.getElementById('virtual-keyboard');
     if (!keyboardContainer || keyboardContainer.children.length > 0) return;
 
+    keyCache.clear();
+
     const layout = [
         ["`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "Backspace"],
         ["Tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\"],
@@ -944,6 +948,12 @@ function createKeyboard() {
                 keyDiv.dataset.key = key;
             }
 
+            const val = keyDiv.dataset.key;
+            if (!keyCache.has(val)) {
+                keyCache.set(val, []);
+            }
+            keyCache.get(val).push(keyDiv);
+
             if (key.length > 1) keyDiv.classList.add('special');
             if (key === "Space") keyDiv.classList.add('space');
 
@@ -955,7 +965,8 @@ function createKeyboard() {
 
 function highlightKey(char) {
     // Remove active class from all keys
-    document.querySelectorAll('.key').forEach(k => k.classList.remove('active'));
+    activeKeys.forEach(k => k.classList.remove('active'));
+    activeKeys = [];
 
     if (char == null) return;
 
@@ -976,14 +987,12 @@ function highlightKey(char) {
     }
 
     keysToHighlight.forEach(keyVal => {
-        // Find key by data-key
-        // We need to handle duplicate Shift keys
-        if (keyVal === 'Shift') {
-             const shifts = document.querySelectorAll('.key[data-key="Shift"]');
-             shifts.forEach(s => s.classList.add('active'));
-        } else {
-             const keyEl = document.querySelector(`.key[data-key="${keyVal}"]`);
-             if (keyEl) keyEl.classList.add('active');
+        const cached = keyCache.get(keyVal);
+        if (cached) {
+            cached.forEach(el => {
+                el.classList.add('active');
+                activeKeys.push(el);
+            });
         }
     });
 }
