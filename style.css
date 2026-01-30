@@ -657,3 +657,66 @@ footer {
     right: 10px;
     font-size: 2rem;
 }
+
+/* Math Mode Styles */
+.math-question {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.math-answer-placeholder {
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    border-bottom: 3px solid var(--accent-color);
+    min-width: 50px;
+    display: inline-block;
+    text-align: center;
+    margin-left: 10px;
+}
+
+.math-answer-placeholder.correct {
+    color: var(--correct-color);
+    border-bottom-color: var(--correct-color);
+}
+
+.math-answer-placeholder.incorrect {
+    color: var(--incorrect-color);
+    border-bottom-color: var(--incorrect-color);
+}
+
+/* Math Level Select */
+#math-level-select {
+    text-align: center;
+    padding: 2rem;
+}
+
+#math-level-select h2 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+}
+
+/* Punctuation Mode Styles */
+.punct-placeholder {
+    font-weight: bold;
+    color: var(--accent-color);
+    background-color: #e3f2fd;
+    padding: 0 5px;
+    border-bottom: 2px solid var(--accent-color);
+    display: inline-block;
+    min-width: 20px;
+    text-align: center;
+}
+
+.punct-placeholder.correct {
+    color: var(--correct-color);
+    background-color: transparent;
+    border-bottom: none;
+}
+
+.punct-placeholder.incorrect {
+    color: var(--incorrect-color);
+    background-color: #ffcdd2;
+}

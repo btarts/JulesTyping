@@ -16,7 +16,10 @@ const wordLists = {
         "apple banana orange grape kiwi pear plum",
         "car bus bike train plane boat ship",
         "one two three four five six seven eight nine ten",
-        "hat cap shoe sock shirt pant coat"
+        "hat cap shoe sock shirt pant coat",
+        "the of and a to in is you that it",
+        "he was for on are as with his they I",
+        "at be this have from or one had by word"
     ],
     hard: [
         "The quick brown fox jumps over the lazy dog.",
@@ -85,11 +88,6 @@ const wordLists = {
         "Weather whether.",
         "Principal principle."
     ],
-    sight_words: [
-        "the", "of", "and", "a", "to", "in", "is", "you", "that", "it",
-        "he", "was", "for", "on", "are", "as", "with", "his", "they", "I",
-        "at", "be", "this", "have", "from", "or", "one", "had", "by", "word"
-    ],
     math: [
         "1 + 1 = 2", "2 + 2 = 4", "5 - 3 = 2", "10 - 5 = 5", "3 + 4 = 7",
         "2 * 3 = 6", "8 / 2 = 4", "9 + 1 = 10", "6 - 2 = 4", "5 * 2 = 10",
@@ -130,6 +128,13 @@ let activeAsteroids = [];
 let spaceLives = 3;
 let spaceTarget = null; // The asteroid currently being typed
 
+// Math Mode Globals
+let mathGrade = 1;
+let currentMathQuestion = "";
+
+// Punctuation Mode Globals
+let currentPunctuationQuestion = "";
+
 // Race Mode Globals
 let raceInterval = null;
 
@@ -166,6 +171,8 @@ function startGame(level) {
         startSpaceGame();
     } else if (level === 'speed') {
         startRaceGame();
+    } else if (level === 'math') {
+        document.getElementById('math-level-select').classList.remove('hidden');
     } else {
         // Standard modes
         textDisplay.classList.remove('hidden');
@@ -197,9 +204,23 @@ function startTimerOnce() {
 }
 
 function nextText() {
-    const list = wordLists[currentLevel];
-    currentText = list[Math.floor(Math.random() * list.length)];
-    renderText();
+    if (currentLevel === 'math') {
+        const { q, a } = generateMathEquation(mathGrade);
+        currentMathQuestion = q;
+        currentText = a;
+        renderMath();
+    } else if (currentLevel === 'punctuation') {
+        const list = wordLists.punctuation;
+        const sentence = list[Math.floor(Math.random() * list.length)];
+        const { display, target } = preparePunctuation(sentence);
+        currentPunctuationQuestion = display;
+        currentText = target;
+        renderPunctuation();
+    } else {
+        const list = wordLists[currentLevel];
+        currentText = list[Math.floor(Math.random() * list.length)];
+        renderText();
+    }
     typingInput.value = '';
 }
 
@@ -222,6 +243,15 @@ function renderText() {
 }
 
 function handleInput() {
+    if (currentLevel === 'math') {
+        handleMathInput();
+        return;
+    }
+    if (currentLevel === 'punctuation') {
+        handlePunctuationInput();
+        return;
+    }
+
     const arrayQuote = cachedSpans;
     const arrayValue = typingInput.value.split('');
     
@@ -298,6 +328,69 @@ function handleInput() {
     }
 }
 
+function preparePunctuation(sentence) {
+    const regex = /[.,;:"'?!(){}\[\]]/g;
+    const matches = [...sentence.matchAll(regex)];
+
+    if (matches.length === 0) {
+        return { display: sentence, target: " " };
+    }
+
+    const randomMatch = matches[Math.floor(Math.random() * matches.length)];
+    const index = randomMatch.index;
+    const char = randomMatch[0];
+
+    const display = sentence.substring(0, index) +
+                    `<span class="punct-placeholder">_</span>` +
+                    sentence.substring(index + 1);
+
+    return { display: display, target: char, original: sentence };
+}
+
+function renderPunctuation() {
+    textDisplay.innerHTML = currentPunctuationQuestion;
+    cachedSpans = [];
+}
+
+function handlePunctuationInput() {
+    const val = typingInput.value;
+    if (val.length === 0) return;
+
+    const char = val.slice(-1);
+    const placeholder = document.querySelector('.punct-placeholder');
+
+    if (char === currentText) {
+        if (placeholder) {
+             placeholder.innerText = char;
+             placeholder.classList.add('correct');
+             placeholder.classList.remove('incorrect');
+        }
+
+        correctTyped++;
+        totalTyped++;
+
+        typingInput.disabled = true;
+        setTimeout(() => {
+            typingInput.disabled = false;
+            typingInput.focus();
+            nextText();
+        }, 800);
+    } else {
+        if (placeholder) {
+             placeholder.innerText = char;
+             placeholder.classList.add('incorrect');
+        }
+
+        setTimeout(() => {
+            typingInput.value = '';
+            if (placeholder) {
+                placeholder.innerText = "_";
+                placeholder.classList.remove('incorrect');
+            }
+        }, 500);
+    }
+}
+
 function updateTimer() {
     if (timeLeft > 0) {
         timeLeft--;
@@ -366,6 +459,9 @@ function cleanupGame() {
     if (spaceArea) spaceArea.classList.add('hidden');
     if (raceArea) raceArea.classList.add('hidden');
 
+    // Math specific
+    document.getElementById('math-level-select').classList.add('hidden');
+
     textDisplay.innerHTML = '';
 
     // Remove asteroids
@@ -377,6 +473,102 @@ function cleanupGame() {
 function restartGame() {
     cleanupGame();
     startGame(currentLevel);
+}
+
+function startMathGame(grade) {
+    mathGrade = grade;
+    document.getElementById('math-level-select').classList.add('hidden');
+    textDisplay.classList.remove('hidden');
+
+    typingInput.disabled = false;
+    typingInput.focus();
+    typingInput.addEventListener('input', handleInput);
+    typingInput.addEventListener('keydown', startTimerOnce);
+
+    nextText();
+}
+
+function generateMathEquation(grade) {
+    let a, b, op, ans;
+    if (grade === 1) {
+        // Add/Sub to 20
+        if (Math.random() > 0.5) {
+            a = Math.floor(Math.random() * 10) + 1;
+            b = Math.floor(Math.random() * 10) + 1;
+            op = "+";
+            ans = a + b;
+        } else {
+            a = Math.floor(Math.random() * 20) + 1;
+            b = Math.floor(Math.random() * a); // Result positive
+            op = "-";
+            ans = a - b;
+        }
+    } else if (grade === 2) {
+        // Add/Sub to 100
+        if (Math.random() > 0.5) {
+            a = Math.floor(Math.random() * 50) + 1;
+            b = Math.floor(Math.random() * 50) + 1;
+            op = "+";
+            ans = a + b;
+        } else {
+            a = Math.floor(Math.random() * 100) + 1;
+            b = Math.floor(Math.random() * a);
+            op = "-";
+            ans = a - b;
+        }
+    } else {
+        // Mul/Div
+        if (Math.random() > 0.5) {
+            a = Math.floor(Math.random() * 10) + 1;
+            b = Math.floor(Math.random() * 10) + 1;
+            op = "x";
+            ans = a * b;
+        } else {
+            b = Math.floor(Math.random() * 9) + 2; // divisor
+            ans = Math.floor(Math.random() * 10) + 1; // answer
+            a = b * ans; // dividend
+            op = "/";
+        }
+    }
+    return { q: `${a} ${op} ${b} = `, a: ans.toString() };
+}
+
+function renderMath() {
+    textDisplay.innerHTML = `<span class="math-question">${currentMathQuestion}</span><span class="math-answer-placeholder">?</span>`;
+    cachedSpans = [];
+}
+
+function handleMathInput() {
+    const val = typingInput.value;
+    const answerSpan = document.querySelector('.math-answer-placeholder');
+    if (answerSpan) {
+        answerSpan.innerText = val || "?";
+    }
+
+    if (val === currentText) {
+        // Correct
+        correctTyped += val.length;
+        totalTyped += val.length;
+
+        if (answerSpan) answerSpan.classList.add('correct');
+
+        // Disable input briefly
+        typingInput.disabled = true;
+
+        setTimeout(() => {
+            typingInput.disabled = false;
+            typingInput.focus();
+            nextText();
+        }, 500);
+    } else if (!currentText.startsWith(val)) {
+        // Wrong
+         if (answerSpan) answerSpan.classList.add('incorrect');
+    } else {
+        if (answerSpan) {
+            answerSpan.classList.remove('incorrect');
+            answerSpan.classList.remove('correct');
+        }
+    }
 }
 
 // Placeholders for new modes

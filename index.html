@@ -32,11 +32,6 @@
                     <h3>Hard</h3>
                     <p>Full Sentences</p>
                 </div>
-                <div class="game-card level-sight" onclick="startGame('sight_words')">
-                    <div class="icon">👀</div>
-                    <h3>Sight Words</h3>
-                    <p>K-1 Words</p>
-                </div>
 
                 <!-- Skill Practice -->
                 <div class="game-card skill-shift" onclick="startGame('shift')">
@@ -143,6 +138,28 @@
                         <div class="car-label">CPU 3</div>
                         <div id="cpu-car-3" class="car">🚓</div>
                         <div class="finish-line">🏁</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Math Mode Selection -->
+            <div id="math-level-select" class="hidden">
+                <h2>Select Grade Level</h2>
+                <div class="game-grid">
+                    <div class="game-card skill-math" onclick="startMathGame(1)">
+                        <div class="icon">1️⃣</div>
+                        <h3>Grade 1</h3>
+                        <p>Add/Sub to 20</p>
+                    </div>
+                    <div class="game-card skill-math" onclick="startMathGame(2)">
+                        <div class="icon">2️⃣</div>
+                        <h3>Grade 2</h3>
+                        <p>Add/Sub to 100</p>
+                    </div>
+                    <div class="game-card skill-math" onclick="startMathGame(3)">
+                        <div class="icon">3️⃣</div>
+                        <h3>Grade 3</h3>
+                        <p>Multiplication</p>
                     </div>
                 </div>
             </div>
