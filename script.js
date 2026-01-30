@@ -175,6 +175,8 @@ function startGame(level) {
         startRaceGame();
     } else if (level === 'math') {
         document.getElementById('math-level-select').classList.remove('hidden');
+    } else if (level === 'puzzle') {
+        startPuzzleGame();
     } else {
         // Standard modes
         textDisplay.classList.remove('hidden');
@@ -444,6 +446,9 @@ function cleanupGame() {
     typingInput.removeEventListener('input', handleInput);
     typingInput.removeEventListener('input', handleSpaceInput);
 
+    // Ensure input is visible (might have been hidden by puzzle mode)
+    typingInput.classList.remove('hidden');
+
     // Reset stats
     cachedSpans = [];
     timeLeft = gameDuration;
@@ -460,6 +465,8 @@ function cleanupGame() {
     if (adventureArea) adventureArea.classList.add('hidden');
     if (spaceArea) spaceArea.classList.add('hidden');
     if (raceArea) raceArea.classList.add('hidden');
+    const kbdGameRoot = document.getElementById('keyboard-game-root');
+    if (kbdGameRoot) kbdGameRoot.classList.add('hidden');
 
     // Math specific
     document.getElementById('math-level-select').classList.add('hidden');
@@ -572,6 +579,36 @@ function handleMathInput() {
         }
     }
 }
+
+function startPuzzleGame() {
+    const kbdGameRoot = document.getElementById('keyboard-game-root');
+    kbdGameRoot.classList.remove('hidden');
+
+    // Clear the virtual keyboard usually shown for typing
+    const vKbd = document.getElementById('virtual-keyboard');
+    if (vKbd) vKbd.innerHTML = '';
+
+    // Hide the typing input as it's not needed
+    document.getElementById('typing-input').classList.add('hidden');
+
+    KeyboardDragDropGame.init();
+}
+
+// Listen for puzzle completion
+document.addEventListener('gameComplete', (e) => {
+    if (e.detail && e.detail.game === 'keyboard-puzzle') {
+        const modal = document.getElementById('results-modal');
+        const title = modal.querySelector('h2');
+        const p1 = modal.querySelector('p:nth-of-type(1)'); // WPM
+        const p2 = modal.querySelector('p:nth-of-type(2)'); // Accuracy
+
+        if (title) title.innerText = "Puzzle Solved! 🧩";
+        if (p1) p1.innerText = "Great Job Fixing the Keyboard!";
+        if (p2) p2.innerText = "";
+
+        modal.classList.remove('hidden');
+    }
+});
 
 // Placeholders for new modes
 function startAdventureGame() {
