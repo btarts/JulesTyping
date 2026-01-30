@@ -893,16 +893,16 @@ function startCPUCars() {
     let cpu3Progress = 0;
     const finishLine = 90;
 
+    const c1 = document.getElementById('cpu-car-1');
+    const c2 = document.getElementById('cpu-car-2');
+    const c3 = document.getElementById('cpu-car-3');
+
     raceInterval = setInterval(() => {
         if (!gameActive) return;
 
         cpu1Progress += 0.2; // Slow
         cpu2Progress += 0.35; // Medium
         cpu3Progress += 0.45; // Fast
-
-        const c1 = document.getElementById('cpu-car-1');
-        const c2 = document.getElementById('cpu-car-2');
-        const c3 = document.getElementById('cpu-car-3');
 
         if(c1) c1.style.left = `${Math.min(cpu1Progress, 90)}%`;
         if(c2) c2.style.left = `${Math.min(cpu2Progress, 90)}%`;
