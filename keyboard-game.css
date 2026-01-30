@@ -1,0 +1,148 @@
+/* Keyboard Drag and Drop Game Styles */
+
+/* Base Container */
+#keyboard-game-root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    font-family: 'Comic Neue', cursive, sans-serif;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Game Board (Keyboard Layout) */
+.kbd-game-board {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #eee;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    width: 100%;
+    align-items: center;
+}
+
+.kbd-game-row {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    width: 100%;
+}
+
+/* Keys and Placeholders */
+.kbd-game-key, .kbd-game-placeholder {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    user-select: none;
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+    box-sizing: border-box;
+}
+
+/* Standard Static Key */
+.kbd-game-key {
+    background-color: #fff;
+    color: #333;
+    border-bottom: 4px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Placeholder (Drop Target) */
+.kbd-game-placeholder {
+    background-color: #ddd;
+    border: 2px dashed #bbb;
+    color: transparent; /* Text is hidden until filled */
+}
+
+.kbd-game-placeholder.kbd-game-drag-over {
+    background-color: #e3f2fd; /* Light Blue */
+    border-color: #2196f3;
+    transform: scale(1.05);
+}
+
+.kbd-game-placeholder.kbd-game-filled {
+    background-color: #e8f5e9; /* Light Green */
+    border: 2px solid #4caf50;
+    color: #2e7d32;
+    border-bottom: 4px solid #388e3c;
+    animation: kbd-game-popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Key Pool Area */
+.kbd-game-pool {
+    display: flex;
+    gap: 15px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 15px;
+    min-height: 90px;
+    border: 3px solid #e0e0e0;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 600px;
+}
+
+/* Draggable Keys in Pool */
+.kbd-game-draggable {
+    width: 50px;
+    height: 50px;
+    background-color: #ffcc80; /* Orange-ish */
+    color: #e65100;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: grab;
+    border-bottom: 4px solid #ef6c00;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.kbd-game-draggable:active {
+    cursor: grabbing;
+    transform: scale(0.95);
+    box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+}
+
+.kbd-game-draggable.kbd-game-dragging {
+    opacity: 0.5;
+    transform: scale(1.1);
+}
+
+/* Animations */
+@keyframes kbd-game-popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+    .kbd-game-key, .kbd-game-placeholder, .kbd-game-draggable {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+        border-bottom-width: 3px;
+    }
+
+    .kbd-game-board {
+        padding: 10px;
+    }
+
+    .kbd-game-pool {
+        padding: 10px;
+        min-height: 70px;
+    }
+}
