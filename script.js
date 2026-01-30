@@ -1,19 +1,29 @@
 const wordLists = {
     easy: [
+        "a s d f j k l ;",
+        "q w e r u i o p",
+        "z x c v m n",
+        "g h t y b n",
+        "a b c d e f g h i j k l m n o p q r s t u v w x y z",
+        "1 2 3 4 5 6 7 8 9 0",
+        "f j f j f j",
+        "d k d k d k",
+        "s l s l s l",
+        "a ; a ; a ;"
+    ],
+    medium: [
         "cat dog sun fun run play jump red blue green",
         "apple banana orange grape kiwi pear plum",
         "car bus bike train plane boat ship",
         "one two three four five six seven eight nine ten",
         "hat cap shoe sock shirt pant coat"
     ],
-    medium: [
+    hard: [
         "The quick brown fox jumps over the lazy dog.",
         "She sells sea shells by the sea shore.",
         "I like to play with my friends in the park.",
         "Reading books is fun and helps you learn.",
-        "The sun rises in the east and sets in the west."
-    ],
-    hard: [
+        "The sun rises in the east and sets in the west.",
         "Photosynthesis is the process by which plants make their own food using sunlight.",
         "The solar system consists of the sun and everything that orbits around it.",
         "Elephants are the largest living land animals and have very long trunks.",
@@ -258,6 +268,8 @@ function handleInput() {
     if (arrayValue.length === currentText.length && correct) {
         if (currentLevel === 'shift') {
             triggerLootAndMove();
+        } else if (currentLevel === 'speed') {
+            playerWinsRace();
         } else {
             // Add score from this round (simplified logic for now, just infinite play until timer runs out)
             // Or we could reload new text.
@@ -649,6 +661,14 @@ function startRaceGame() {
 function updateRaceVisuals(currentLen, totalLen) {
     const progress = (currentLen / totalLen) * 90; // Max 90%
     document.getElementById('player-car').style.left = `${progress}%`;
+}
+
+function playerWinsRace() {
+    clearInterval(raceInterval);
+    document.getElementById('player-car').style.left = '90%';
+    endGame();
+    const modalH2 = resultsModal.querySelector('h2');
+    if(modalH2) modalH2.innerText = "You Won! 🏆";
 }
 
 function startCPUCars() {
