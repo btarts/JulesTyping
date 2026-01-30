@@ -84,6 +84,23 @@ const wordLists = {
         "Loose lose.",
         "Weather whether.",
         "Principal principle."
+    ],
+    sight_words: [
+        "the", "of", "and", "a", "to", "in", "is", "you", "that", "it",
+        "he", "was", "for", "on", "are", "as", "with", "his", "they", "I",
+        "at", "be", "this", "have", "from", "or", "one", "had", "by", "word"
+    ],
+    math: [
+        "1 + 1 = 2", "2 + 2 = 4", "5 - 3 = 2", "10 - 5 = 5", "3 + 4 = 7",
+        "2 * 3 = 6", "8 / 2 = 4", "9 + 1 = 10", "6 - 2 = 4", "5 * 2 = 10",
+        "10 + 20 = 30", "15 - 5 = 10", "4 * 4 = 16", "20 / 5 = 4", "1 + 2 + 3 = 6"
+    ],
+    punctuation: [
+        "Hello, world!", "How are you?", "Wait; pause.", "Ready... set... go!",
+        "Yes, please.", "No, thank you.", "Stop!", "Look at that.",
+        "One, two, three.", "Red, blue, green.", "It's a beautiful day.",
+        "Can you help me?", "Don't give up!", "First: dream. Second: do.",
+        "(Parentheses)", "[Brackets]", "{Braces}"
     ]
 };
 
