@@ -127,6 +127,8 @@ let asteroidSpawnInterval = null;
 let activeAsteroids = [];
 let spaceLives = 3;
 let spaceTarget = null; // The asteroid currently being typed
+let cachedSpaceCanvas = null;
+let cachedSpaceship = null;
 
 // Math Mode Globals
 let mathGrade = 1;
@@ -664,6 +666,9 @@ function startSpaceGame() {
     spaceLives = 3;
     document.getElementById('lives').innerText = spaceLives;
 
+    if (!cachedSpaceCanvas) cachedSpaceCanvas = document.getElementById('space-canvas');
+    if (!cachedSpaceship) cachedSpaceship = document.getElementById('spaceship');
+
     activeAsteroids = [];
     spaceTarget = null;
 
@@ -793,13 +798,15 @@ function damagePlayer() {
 }
 
 function shootLaser(targetEl) {
-    const canvas = document.getElementById('space-canvas');
+    if (!cachedSpaceCanvas) cachedSpaceCanvas = document.getElementById('space-canvas');
+    const canvas = cachedSpaceCanvas;
     const laser = document.createElement('div');
     laser.classList.add('laser');
 
     // Calculate angle? For now just vertical line or simple beam
     // Let's make it a line from ship to target
-    const ship = document.getElementById('spaceship');
+    if (!cachedSpaceship) cachedSpaceship = document.getElementById('spaceship');
+    const ship = cachedSpaceship;
     const shipRect = ship.getBoundingClientRect();
     const targetRect = targetEl.getBoundingClientRect();
     const canvasRect = canvas.getBoundingClientRect();
