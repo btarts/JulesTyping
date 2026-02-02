@@ -131,6 +131,8 @@ let spaceLives = 3;
 let spaceTarget = null; // The asteroid currently being typed
 let cachedSpaceCanvas = null;
 let cachedSpaceship = null;
+let lastTime = 0;
+let spaceAnimationFrameId = null;
 
 // Math Mode Globals
 let mathGrade = 1;
@@ -439,6 +441,7 @@ function endGame() {
 function cleanupGame() {
     clearInterval(timerInterval);
     clearInterval(spaceGameInterval);
+    if (spaceAnimationFrameId) cancelAnimationFrame(spaceAnimationFrameId);
     clearInterval(asteroidSpawnInterval);
     clearInterval(raceInterval);
     gameActive = false;
@@ -719,8 +722,23 @@ function startSpaceGame() {
     gameActive = true;
 
     // Start Loops
-    spaceGameInterval = setInterval(updateSpaceGame, 50); // 20fps
+    lastTime = 0;
+    spaceAnimationFrameId = requestAnimationFrame(gameLoop);
     asteroidSpawnInterval = setInterval(spawnAsteroid, 2000); // Every 2s
+}
+
+function gameLoop(timestamp) {
+    if (!gameActive) return;
+
+    if (lastTime === 0) lastTime = timestamp;
+    const deltaTime = timestamp - lastTime;
+    lastTime = timestamp;
+
+    updateSpaceGame(deltaTime);
+
+    if (gameActive) {
+        spaceAnimationFrameId = requestAnimationFrame(gameLoop);
+    }
 }
 
 function spawnAsteroid() {
@@ -754,11 +772,18 @@ function spawnAsteroid() {
     });
 }
 
-function updateSpaceGame() {
+function updateSpaceGame(deltaTime) {
     const height = spaceArea.clientHeight;
 
+    // Use a default deltaTime if not provided (e.g. initial call or direct call)
+    // 50ms was the old interval. Check explicitly for undefined/null because 0 is valid.
+    const dt = (deltaTime === undefined || deltaTime === null) ? 50 : deltaTime;
+
     activeAsteroids.forEach((ast, index) => {
-        ast.y += ast.speed;
+        // Old logic: speed pixels per 50ms
+        // New logic: (speed / 50) pixels per 1ms * dt
+        const move = (ast.speed / 50) * dt;
+        ast.y += move;
         ast.el.style.top = `${ast.y}px`;
 
         // Check collision
