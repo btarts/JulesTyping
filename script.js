@@ -205,7 +205,7 @@ function goHome() {
 function startTimerOnce() {
     if (!gameActive) {
         gameActive = true;
-        startTime = new Date();
+        startTime = Date.now();
         timerInterval = setInterval(updateTimer, 1000);
         typingInput.removeEventListener('keydown', startTimerOnce);
     }
@@ -302,7 +302,7 @@ function handleInput() {
         // Calculate WPM: (characters / 5) / (time in minutes)
         // If time is small, WPM spikes, so we might want to dampen it or just show it raw.
         // Let's use elapsed time.
-        const elapsedSeconds = (new Date() - startTime) / 1000;
+        const elapsedSeconds = (Date.now() - startTime) / 1000;
         const elapsedMinutes = elapsedSeconds / 60;
         if (elapsedSeconds > 1) {
             const wpm = Math.round((currentCorrect / 5) / elapsedMinutes);
