@@ -119,6 +119,7 @@ let gameDuration = 60;
 let timeLeft = 60;
 let totalTyped = 0;
 let correctTyped = 0;
+const punctuationRegex = /[.,;:"'?!(){}\[\]]/g;
 let cachedSpans = [];
 let keyCache = new Map();
 let activeKeys = [];
@@ -337,8 +338,7 @@ function handleInput() {
 }
 
 function preparePunctuation(sentence) {
-    const regex = /[.,;:"'?!(){}\[\]]/g;
-    const matches = [...sentence.matchAll(regex)];
+    const matches = [...sentence.matchAll(punctuationRegex)];
 
     if (matches.length === 0) {
         return { display: sentence, target: " " };
